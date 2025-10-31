@@ -1,6 +1,6 @@
 package com.wjc.codetest.product.model.response;
 
-import com.wjc.codetest.product.model.domain.Product;
+import com.wjc.codetest.product.model.domain.entity.Product;
 import lombok.Getter;
 import lombok.Setter;
 

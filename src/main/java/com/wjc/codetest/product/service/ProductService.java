@@ -2,7 +2,7 @@ package com.wjc.codetest.product.service;
 
 import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
-import com.wjc.codetest.product.model.domain.Product;
+import com.wjc.codetest.product.model.domain.entity.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,14 +34,14 @@ public class ProductService {
         return productOptional.get();
     }
 
-    public Product update(UpdateProductRequest dto) {
-        Product product = getProductById(dto.getId());
-        product.setCategory(dto.getCategory());
-        product.setName(dto.getName());
-        Product updatedProduct = productRepository.save(product);
-        return updatedProduct;
-
-    }
+//    public Product update(UpdateProductRequest dto) {
+//        Product product = getProductById(dto.getId());
+//        product.setCategory(dto.getCategory());
+//        product.setName(dto.getName());
+//        Product updatedProduct = productRepository.save(product);
+//        return updatedProduct;
+//
+//    }
 
     public void deleteById(Long productId) {
         Product product = getProductById(productId);

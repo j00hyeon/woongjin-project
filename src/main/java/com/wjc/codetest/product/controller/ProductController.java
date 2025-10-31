@@ -2,7 +2,7 @@ package com.wjc.codetest.product.controller;
 
 import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
-import com.wjc.codetest.product.model.domain.Product;
+import com.wjc.codetest.product.model.domain.entity.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductListResponse;
 import com.wjc.codetest.product.service.ProductService;
@@ -37,11 +37,11 @@ public class ProductController {
         return ResponseEntity.ok(true);
     }
 
-    @PostMapping(value = "/update/product")
-    public ResponseEntity<Product> updateProduct(@RequestBody UpdateProductRequest dto){
-        Product product = productService.update(dto);
-        return ResponseEntity.ok(product);
-    }
+//    @PostMapping(value = "/update/product")
+//    public ResponseEntity<Product> updateProduct(@RequestBody UpdateProductRequest dto){
+//        Product product = productService.update(dto);
+//        return ResponseEntity.ok(product);
+//    }
 
     @PostMapping(value = "/product/list")
     public ResponseEntity<ProductListResponse> getProductListByCategory(@RequestBody GetProductListRequest dto){
