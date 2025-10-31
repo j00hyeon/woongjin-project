@@ -1,5 +1,6 @@
 package com.wjc.codetest.product.service;
 
+import com.wjc.codetest.product.exception.ProductNotFoundException;
 import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.entity.Product;
@@ -26,12 +27,22 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    /**
+     * [리뷰] 예외 처리 개선
+     * [문제]
+     *  - isPresent() + get() 조합 사용
+     *   -> 빈 Optional에 get() 호출 시 NoSuchElementException 발생
+     *   -> Optional을 단순 null 체크용으로만 사용
+     *  - RuntimeException 사용은 명확한 예외 원인을 알기 어려움
+     * [원인] Optional 메서드 활용도 낮음
+     * [개선안]
+     *  - orElseThrow()로 가독성 향상
+     *  - 커스텀 예외(ProductNotFoundException) 생성으로 명확한 예외 처리
+     *  - GlobalExceptionHandler에서 404 상태 코드 반환
+     */
     public Product getProductById(Long productId) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if (!productOptional.isPresent()) {
-            throw new RuntimeException("product not found");
-        }
-        return productOptional.get();
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));
     }
 
     public Product update(UpdateProductRequest dto) {
