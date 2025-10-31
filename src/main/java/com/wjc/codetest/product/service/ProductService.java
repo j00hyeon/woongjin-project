@@ -34,14 +34,13 @@ public class ProductService {
         return productOptional.get();
     }
 
-//    public Product update(UpdateProductRequest dto) {
-//        Product product = getProductById(dto.getId());
-//        product.setCategory(dto.getCategory());
-//        product.setName(dto.getName());
-//        Product updatedProduct = productRepository.save(product);
-//        return updatedProduct;
-//
-//    }
+    public Product update(UpdateProductRequest dto) {
+        Product product = getProductById(dto.getId());
+        product.setCategory(dto.getCategory());
+        product.setName(dto.getName());
+        Product updatedProduct = productRepository.save(product);
+        return updatedProduct;
+    }
 
     public void deleteById(Long productId) {
         Product product = getProductById(productId);

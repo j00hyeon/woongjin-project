@@ -13,43 +13,79 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * [리뷰 1] RESTful API 설계 개선
+ * [문제] URL에 동사 포함, 일관성 없는 URL 패턴
+ * [원인] REST 원칙 미준수
+ * [개선안] URL은 명사(리소스)만, 동작은 HTTP 메서드로 표현
+ */
+
 @RestController
-@RequestMapping
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping(value = "/get/product/by/{productId}")
+    /**
+     * product 단건 조회
+     * @param productId
+     * @return
+     */
+    @GetMapping(value = "/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable(name = "productId") Long productId){
         Product product = productService.getProductById(productId);
         return ResponseEntity.ok(product);
     }
 
-    @PostMapping(value = "/create/product")
+    /**
+     * product 생성
+     * @param dto
+     * @return
+     */
+    @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest dto){
         Product product = productService.create(dto);
         return ResponseEntity.ok(product);
     }
 
-    @PostMapping(value = "/delete/product/{productId}")
+    /**
+     * product 삭제
+     * @param productId
+     * @return
+     */
+    @DeleteMapping(value = "/{productId}")
     public ResponseEntity<Boolean> deleteProduct(@PathVariable(name = "productId") Long productId){
         productService.deleteById(productId);
         return ResponseEntity.ok(true);
     }
 
-//    @PostMapping(value = "/update/product")
-//    public ResponseEntity<Product> updateProduct(@RequestBody UpdateProductRequest dto){
-//        Product product = productService.update(dto);
-//        return ResponseEntity.ok(product);
-//    }
+    /**
+     * product 수정
+     * @param dto
+     * @return
+     */
+    @PatchMapping(value = "/{productId}")
+    public ResponseEntity<Product> updateProduct(@RequestBody UpdateProductRequest dto){
+        Product product = productService.update(dto);
+        return ResponseEntity.ok(product);
+    }
 
-    @PostMapping(value = "/product/list")
+    /**
+     * category별 product 목록 조회
+     * @param dto
+     * @return
+     */
+    @GetMapping(value = "/list")
     public ResponseEntity<ProductListResponse> getProductListByCategory(@RequestBody GetProductListRequest dto){
         Page<Product> productList = productService.getListByCategory(dto);
         return ResponseEntity.ok(new ProductListResponse(productList.getContent(), productList.getTotalPages(), productList.getTotalElements(), productList.getNumber()));
     }
 
-    @GetMapping(value = "/product/category/list")
+    /**
+     * category 목록 조회
+     * @return
+     */
+    @GetMapping(value = "/categories")
     public ResponseEntity<List<String>> getProductListByCategory(){
         List<String> uniqueCategories = productService.getUniqueCategories();
         return ResponseEntity.ok(uniqueCategories);
