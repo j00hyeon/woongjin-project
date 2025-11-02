@@ -6,14 +6,15 @@ import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
+import com.wjc.codetest.product.model.response.ProductResponse;
 import com.wjc.codetest.product.repository.ProductRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -58,6 +59,10 @@ public class ProductService {
      *  - 커스텀 예외(ProductNotFoundException) 생성으로 명확한 예외 처리
      *  - GlobalExceptionHandler에서 404 상태 코드 반환
      */
+    public ProductResponse getProductDtoById(Long productId) {
+        return ProductResponse.fromEntity(getProductById(productId));
+    }
+
     public Product getProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));

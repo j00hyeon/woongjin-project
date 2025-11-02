@@ -5,6 +5,7 @@ import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductListResponse;
+import com.wjc.codetest.product.model.response.ProductResponse;
 import com.wjc.codetest.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +31,12 @@ public class ProductController {
 
     /**
      * 상품 단건 조회
+     * [문제] Entity 직접 반환
+     * [개선안] DTO로 변환 후 데이터 반환
      */
     @GetMapping(value = "/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long productId){
-        Product product = productService.getProductById(productId);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId){
+        return ResponseEntity.ok(productService.getProductDtoById(productId));
     }
 
     /**
