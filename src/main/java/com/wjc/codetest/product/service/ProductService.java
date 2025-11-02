@@ -24,10 +24,19 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public Product create(CreateProductRequest dto) {
+    /**
+     * 상품 생성 로직 개선
+     * [문제]
+     *  - 중복 이름 검증 누락
+     *  - entity 반환
+     * [개선안]
+     *  - 중복 이름 검증 추가
+     */
+    @Transactional
+    public void create(CreateProductRequest dto) {
         validateDuplicateName(dto.getName());
         Product product = new Product(dto.getCategory(), dto.getName());
-        return productRepository.save(product);
+        productRepository.save(product);
     }
 
     private void validateDuplicateName(String productName) {
@@ -65,7 +74,7 @@ public class ProductService {
      *  - Entity에 update() 로직 추가
      *  - @Transactional + 더티체킹으로 save() 제거
      *  - 중복 이름 검증 추가
-     *   - 최소 1개 필드 입력 검증
+     *  - 최소 1개 필드 입력 검증
      */
     @Transactional
     public Product update(Long productId, UpdateProductRequest dto) {
