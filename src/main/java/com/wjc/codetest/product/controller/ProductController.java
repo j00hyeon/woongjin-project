@@ -6,8 +6,10 @@ import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductListResponse;
 import com.wjc.codetest.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +29,7 @@ public class ProductController {
     private final ProductService productService;
 
     /**
-     * product 단건 조회
+     * 상품 단건 조회
      */
     @GetMapping(value = "/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable Long productId){
@@ -36,16 +38,19 @@ public class ProductController {
     }
 
     /**
-     * product 생성
+     * 상품 생성
+     * [리뷰] HTTP 상태 코드 개선
+     * [문제] Entity 직접 반환으로 내부 구조 노출
+     * [개선안] 201 Created 반환
      */
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest dto){
-        Product product = productService.create(dto);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<Void> createProduct(@Valid @RequestBody CreateProductRequest dto){
+        productService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
-     * product 삭제
+     * 상품 삭제
      */
     @DeleteMapping(value = "/{productId}")
     public ResponseEntity<Boolean> deleteProduct(@PathVariable Long productId){
@@ -68,7 +73,7 @@ public class ProductController {
     }
 
     /**
-     * category별 product 목록 조회
+     * 카테고리별 상품 목록 조회
      */
     @GetMapping(value = "/list")
     public ResponseEntity<ProductListResponse> getProductListByCategory(@RequestBody GetProductListRequest dto){
@@ -77,7 +82,7 @@ public class ProductController {
     }
 
     /**
-     * category 목록 조회
+     * 카테고리 목록 조회
      */
     @GetMapping(value = "/categories")
     public ResponseEntity<List<String>> getProductListByCategory(){
