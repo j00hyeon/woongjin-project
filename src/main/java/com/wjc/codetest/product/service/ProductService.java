@@ -6,7 +6,8 @@ import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
-import com.wjc.codetest.product.model.response.ProductResponse;
+import com.wjc.codetest.product.model.response.CreateProductResponse;
+import com.wjc.codetest.product.model.response.UpdateProductResponse;
 import com.wjc.codetest.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,8 +60,8 @@ public class ProductService {
      *  - 커스텀 예외(ProductNotFoundException) 생성으로 명확한 예외 처리
      *  - GlobalExceptionHandler에서 404 상태 코드 반환
      */
-    public ProductResponse getProductDtoById(Long productId) {
-        return ProductResponse.fromEntity(getProductById(productId));
+    public CreateProductResponse getProductDtoById(Long productId) {
+        return CreateProductResponse.fromEntity(getProductById(productId));
     }
 
     public Product getProductById(Long productId) {
@@ -82,14 +83,15 @@ public class ProductService {
      *  - 최소 1개 필드 입력 검증
      */
     @Transactional
-    public Product update(Long productId, UpdateProductRequest dto) {
+    public UpdateProductResponse update(Long productId, UpdateProductRequest dto) {
         Product product = getProductById(productId);
         validateAtLeastOneField(dto);
-        if ((dto.getName() != null) && (!dto.getName().isBlank())) {
+
+        if ((dto.getName() != null) && (!dto.getName().isBlank()) && (!dto.getName().equals(product.getName()))) {
             validateDuplicateName(dto.getName());
         }
         product.update(dto.getCategory(), dto.getName());
-        return product;
+        return UpdateProductResponse.fromEntity(product);
     }
 
     private void validateAtLeastOneField(UpdateProductRequest dto) {

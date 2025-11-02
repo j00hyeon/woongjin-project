@@ -5,7 +5,8 @@ import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductListResponse;
-import com.wjc.codetest.product.model.response.ProductResponse;
+import com.wjc.codetest.product.model.response.CreateProductResponse;
+import com.wjc.codetest.product.model.response.UpdateProductResponse;
 import com.wjc.codetest.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ProductController {
      * [개선안] DTO로 변환 후 데이터 반환
      */
     @GetMapping(value = "/{productId}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId){
+    public ResponseEntity<CreateProductResponse> getProductById(@PathVariable Long productId){
         return ResponseEntity.ok(productService.getProductDtoById(productId));
     }
 
@@ -65,15 +66,16 @@ public class ProductController {
     /**
      * 상품 수정
      * [리뷰] RESTful API 개선
+     * [문제] entity 직접 반환으로 내부 구조 노출
      * [개선안]
      *  - PathVariable로 리소스 식별
      *  - RequestBody에 ID 제거
+     *  - dto 반환
      */
     @PatchMapping(value = "/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long productId,
-                                                 @RequestBody UpdateProductRequest dto){
-        Product product = productService.update(productId, dto);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<UpdateProductResponse> updateProduct(@PathVariable Long productId,
+                                                               @RequestBody UpdateProductRequest dto){
+        return ResponseEntity.ok(productService.update(productId, dto));
     }
 
     /**
