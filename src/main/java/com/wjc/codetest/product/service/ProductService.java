@@ -6,7 +6,7 @@ import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
-import com.wjc.codetest.product.model.response.CreateProductResponse;
+import com.wjc.codetest.product.model.response.ProductResponse;
 import com.wjc.codetest.product.model.response.UpdateProductResponse;
 import com.wjc.codetest.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +60,8 @@ public class ProductService {
      *  - 커스텀 예외(ProductNotFoundException) 생성으로 명확한 예외 처리
      *  - GlobalExceptionHandler에서 404 상태 코드 반환
      */
-    public CreateProductResponse getProductDtoById(Long productId) {
-        return CreateProductResponse.fromEntity(getProductById(productId));
+    public ProductResponse getProductDtoById(Long productId) {
+        return ProductResponse.fromEntity(getProductById(productId));
     }
 
     public Product getProductById(Long productId) {

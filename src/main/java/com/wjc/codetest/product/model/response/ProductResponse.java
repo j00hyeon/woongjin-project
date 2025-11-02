@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CreateProductResponse {
+public class ProductResponse {
     private Long id;
     private String name;
     private String category;
 
-    public static CreateProductResponse fromEntity(Product product) {
-        return CreateProductResponse.builder()
+    public static ProductResponse fromEntity(Product product) {
+        return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .category(product.getCategory())

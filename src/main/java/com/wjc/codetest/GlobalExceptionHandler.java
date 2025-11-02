@@ -19,25 +19,24 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice(value = {"com.wjc.codetest.product.controller"})
 public class GlobalExceptionHandler {
 
-    @ResponseBody
     @ExceptionHandler(ProductNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleProductNotFound(ProductNotFoundException e) {
         log.error("ProductNotFoundException: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
 
-    @ResponseBody
     @ExceptionHandler(DuplicateProductNameException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<String> handleProductNotFound(DuplicateProductNameException e) {
+    public ResponseEntity<String> handleDuplicateProductName(DuplicateProductNameException e) {
         log.error("DuplicateProductNameException: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 
-    @ResponseBody
+    /**
+     * [문제] ResponseEntity + @ResponseBody 중복
+     * [개선안] ResponseEntity가 JSON Body를 포함하므로 @ResponseBody 제거
+     */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> runTimeException(Exception e) {
