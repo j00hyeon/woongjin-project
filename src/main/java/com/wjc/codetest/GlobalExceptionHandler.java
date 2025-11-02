@@ -1,5 +1,6 @@
 package com.wjc.codetest;
 
+import com.wjc.codetest.product.exception.DuplicateProductNameException;
 import com.wjc.codetest.product.exception.ProductNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleProductNotFound(ProductNotFoundException e) {
         log.error("ProductNotFoundException: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(DuplicateProductNameException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleProductNotFound(DuplicateProductNameException e) {
+        log.error("DuplicateProductNameException: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 

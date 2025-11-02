@@ -1,11 +1,13 @@
 package com.wjc.codetest.product.service;
 
+import com.wjc.codetest.product.exception.DuplicateProductNameException;
 import com.wjc.codetest.product.exception.ProductNotFoundException;
 import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
-import com.wjc.codetest.product.model.domain.entity.Product;
+import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,12 +25,19 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public Product create(CreateProductRequest dto) {
+        validateDuplicateName(dto.getName());
         Product product = new Product(dto.getCategory(), dto.getName());
         return productRepository.save(product);
     }
 
+    private void validateDuplicateName(String productName) {
+        if (productRepository.existsByName(productName)) {
+            throw new DuplicateProductNameException("이미 존재하는 상품명입니다: " + productName);
+        }
+    }
+
     /**
-     * [리뷰] 예외 처리 개선
+     * 예외 처리 개선
      * [문제]
      *  - isPresent() + get() 조합 사용
      *   -> 빈 Optional에 get() 호출 시 NoSuchElementException 발생
@@ -45,12 +54,35 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));
     }
 
-    public Product update(UpdateProductRequest dto) {
-        Product product = getProductById(dto.getId());
-        product.setCategory(dto.getCategory());
-        product.setName(dto.getName());
-        Product updatedProduct = productRepository.save(product);
-        return updatedProduct;
+    /**
+     * 상품 수정 로직 개선
+     * [문제]
+     *  - Service에서 setter 직접 사용
+     *  - 중복 이름 검증 누락
+     *  - 부분 업데이트 검증 부재
+     * [원인] 도메인 로직이 Service 계층에 노출
+     * [개선안]
+     *  - Entity에 update() 로직 추가
+     *  - @Transactional + 더티체킹으로 save() 제거
+     *  - 중복 이름 검증 추가
+     *   - 최소 1개 필드 입력 검증
+     */
+    @Transactional
+    public Product update(Long productId, UpdateProductRequest dto) {
+        Product product = getProductById(productId);
+        validateAtLeastOneField(dto);
+        if ((dto.getName() != null) && (!dto.getName().isBlank())) {
+            validateDuplicateName(dto.getName());
+        }
+        product.update(dto.getCategory(), dto.getName());
+        return product;
+    }
+
+    private void validateAtLeastOneField(UpdateProductRequest dto) {
+        if ((dto.getCategory() == null || dto.getCategory().isBlank()) &&
+                (dto.getName() == null || dto.getName().isBlank())) {
+            throw new IllegalArgumentException("최소 하나의 필드는 입력해야 합니다.");
+        }
     }
 
     public void deleteById(Long productId) {

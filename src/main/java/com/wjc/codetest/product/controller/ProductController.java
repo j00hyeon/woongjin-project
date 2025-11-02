@@ -2,7 +2,7 @@ package com.wjc.codetest.product.controller;
 
 import com.wjc.codetest.product.model.request.CreateProductRequest;
 import com.wjc.codetest.product.model.request.GetProductListRequest;
-import com.wjc.codetest.product.model.domain.entity.Product;
+import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductListResponse;
 import com.wjc.codetest.product.service.ProductService;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * [리뷰 1] RESTful API 설계 개선
+ * RESTful API 설계 개선
  * [문제] URL에 동사 포함, 일관성 없는 URL 패턴
  * [원인] REST 원칙 미준수
  * [개선안] URL은 명사(리소스)만, 동작은 HTTP 메서드로 표현
@@ -28,19 +28,15 @@ public class ProductController {
 
     /**
      * product 단건 조회
-     * @param productId
-     * @return
      */
     @GetMapping(value = "/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable(name = "productId") Long productId){
+    public ResponseEntity<Product> getProductById(@PathVariable Long productId){
         Product product = productService.getProductById(productId);
         return ResponseEntity.ok(product);
     }
 
     /**
      * product 생성
-     * @param dto
-     * @return
      */
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest dto){
@@ -50,30 +46,29 @@ public class ProductController {
 
     /**
      * product 삭제
-     * @param productId
-     * @return
      */
     @DeleteMapping(value = "/{productId}")
-    public ResponseEntity<Boolean> deleteProduct(@PathVariable(name = "productId") Long productId){
+    public ResponseEntity<Boolean> deleteProduct(@PathVariable Long productId){
         productService.deleteById(productId);
         return ResponseEntity.ok(true);
     }
 
     /**
-     * product 수정
-     * @param dto
-     * @return
+     * 상품 수정
+     * [리뷰] RESTful API 개선
+     * [개선안]
+     *  - PathVariable로 리소스 식별
+     *  - RequestBody에 ID 제거
      */
     @PatchMapping(value = "/{productId}")
-    public ResponseEntity<Product> updateProduct(@RequestBody UpdateProductRequest dto){
-        Product product = productService.update(dto);
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId,
+                                                 @RequestBody UpdateProductRequest dto){
+        Product product = productService.update(productId, dto);
         return ResponseEntity.ok(product);
     }
 
     /**
      * category별 product 목록 조회
-     * @param dto
-     * @return
      */
     @GetMapping(value = "/list")
     public ResponseEntity<ProductListResponse> getProductListByCategory(@RequestBody GetProductListRequest dto){
@@ -83,7 +78,6 @@ public class ProductController {
 
     /**
      * category 목록 조회
-     * @return
      */
     @GetMapping(value = "/categories")
     public ResponseEntity<List<String>> getProductListByCategory(){
