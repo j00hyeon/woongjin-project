@@ -1,38 +1,75 @@
 package com.wjc.codetest.product.model.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+/**
+ * @Setter 제거
+ * [문제] @Setter 사용 시 외부에서 무분별하게 변경 가능
+ * [원인] Lombok @Setter가 모든 필드에 public setter 생성
+ * [개선안] @Setter 제거, 필요한 경우 메서드 추가 (updateCategory, updateName 등)
+ */
+
+/**
+ * 중복 Getter 제거
+ * [문제] @Getter annotation과 getter method 중복 작성
+ * [개선안] @Getter 어노테이션으로 통일
+ */
+
+/**
+ * 기본 생성자
+ * [개선안] Lombok 사용으로 통일
+ */
 @Entity
+@Table (
+        indexes = {
+                @Index(name = "idx_category", columnList = "category")
+        }
+)
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
+    /**
+     * JPA 기본키 생성 전략 개선
+     * [문제] AUTO 사용 시 H2가 SEQUENCE 방식 선택
+     * [원인] MODE=MySQL로 MySQL 모드이지만 AUTO는 H2 기본 동작(SEQUENCE)을 따름
+     * [개선안] IDENTITY로 변경해 AUTO_INCREMENT 방식 사용
+     */
     @Id
     @Column(name = "product_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category")
+    /**
+     * 제약 조건 추가
+     * [문제] null값 저장 가능
+     * [개선안] nullable = false로 DB레벨 제약 추가로 데이터 무결성 보장 가능
+     */
+    @Column(name = "category", nullable = false)
     private String category;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
-
-    protected Product() {
-    }
 
     public Product(String category, String name) {
         this.category = category;
         this.name = name;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public String getName() {
-        return name;
+    /**
+     * 부분 업데이트 지원
+     * [개선안] null/빈값 체크로 전달된 필드만 수정
+     * [효과] PATCH 의미에 맞는 부분 업데이트 구현
+     */
+    public void update(String category, String name) {
+        if (category != null && !category.isBlank()) {
+            this.category = category;
+        }
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
     }
 }
