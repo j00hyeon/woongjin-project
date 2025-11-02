@@ -100,8 +100,7 @@ public class ProductService {
     }
 
     public void deleteById(Long productId) {
-        Product product = getProductById(productId);
-        productRepository.delete(product);
+        productRepository.delete(getProductById(productId));
     }
 
     public Page<Product> getListByCategory(GetProductListRequest dto) {

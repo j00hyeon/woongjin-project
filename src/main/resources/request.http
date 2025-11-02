@@ -43,3 +43,6 @@ Content-type: application/json
   "name": "",
   "category": "newCategory3"
 }
+
+### 상품 삭제
+DELETE http://localhost:8080/products/1

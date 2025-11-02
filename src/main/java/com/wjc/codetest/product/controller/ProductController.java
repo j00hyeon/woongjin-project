@@ -53,11 +53,13 @@ public class ProductController {
 
     /**
      * 상품 삭제
+     * [문제] boolean 반환
+     * [개선안] HTTP 상태코드로 알 수 있기 때문에 boolean 무의미
      */
     @DeleteMapping(value = "/{productId}")
-    public ResponseEntity<Boolean> deleteProduct(@PathVariable Long productId){
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId){
         productService.deleteById(productId);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.noContent().build();
     }
 
     /**
