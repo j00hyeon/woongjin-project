@@ -1,7 +1,9 @@
 package com.wjc.codetest.product.model.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * @Setter 제거
@@ -15,8 +17,14 @@ import lombok.Getter;
  * [문제] @Getter annotation과 getter method 중복 작성
  * [개선안] @Getter 어노테이션으로 통일
  */
+
+/**
+ * 기본 생성자
+ * [개선안] Lombok 사용으로 통일
+ */
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
     /**
@@ -30,14 +38,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category")
+    /**
+     * 제약 조건 추가
+     * [문제] null값 저장 가능
+     * [개선안] nullable = false로 DB레벨 제약 추가로 데이터 무결성 보장 가능
+     */
+    @Column(name = "category", nullable = false)
     private String category;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
-
-    protected Product() {
-    }
 
     public Product(String category, String name) {
         this.category = category;
