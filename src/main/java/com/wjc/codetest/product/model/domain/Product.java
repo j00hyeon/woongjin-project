@@ -23,6 +23,11 @@ import lombok.NoArgsConstructor;
  * [개선안] Lombok 사용으로 통일
  */
 @Entity
+@Table (
+        indexes = {
+                @Index(name = "idx_category", columnList = "category")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {

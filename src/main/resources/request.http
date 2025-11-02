@@ -3,12 +3,42 @@ POST http://localhost:8080/products
 Content-type: application/json
 
 {
-  "category": "tae",
+  "category": "tea",
   "name": "earlgrey"
+}
+
+### 상품 등록
+POST http://localhost:8080/products
+Content-type: application/json
+
+{
+  "category": "tea",
+  "name": "rooibos"
+}
+
+### 상품 등록
+POST http://localhost:8080/products
+Content-type: application/json
+
+{
+  "category": "keyboard",
+  "name": "logitech"
+}
+
+### 상품 등록 (null)
+POST http://localhost:8080/products
+Content-type: application/json
+
+{
+  "category": "tea",
+  "name": " "
 }
 
 ### product 단건 조회
 GET http://localhost:8080/products/1
+
+### product 단건 조회2
+GET http://localhost:8080/products/2
 
 ### 상품 이름 수정
 PATCH http://localhost:8080/products/1
@@ -46,3 +76,12 @@ Content-type: application/json
 
 ### 상품 삭제
 DELETE http://localhost:8080/products/1
+
+### 카테고리 조회
+GET http://localhost:8080/products/categories
+
+### 전체 상품 조회
+GET http://localhost:8080/products
+
+### 카테고리별 페이지 조회
+GET http://localhost:8080/products?category=tea

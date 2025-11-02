@@ -3,7 +3,6 @@ package com.wjc.codetest.product.service;
 import com.wjc.codetest.product.exception.DuplicateProductNameException;
 import com.wjc.codetest.product.exception.ProductNotFoundException;
 import com.wjc.codetest.product.model.request.CreateProductRequest;
-import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductResponse;
@@ -105,12 +104,25 @@ public class ProductService {
         productRepository.delete(getProductById(productId));
     }
 
-    public Page<Product> getListByCategory(GetProductListRequest dto) {
-        PageRequest pageRequest = PageRequest.of(dto.getPage(), dto.getSize(), Sort.by(Sort.Direction.ASC, "category"));
-        return productRepository.findAllByCategory(dto.getCategory(), pageRequest);
+    public Page<Product> getList(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productRepository.findAll(pageRequest);
+    }
+
+    public Page<Product> getListByCategory(String category, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "category"));
+        long start = System.currentTimeMillis();
+        Page<Product> result = productRepository.findAllByCategory(category, pageRequest);
+        long end = System.currentTimeMillis();
+        log.info("[인덱스 적용 후] 조회 시간: {}ms", end - start);
+        return result;
     }
 
     public List<String> getUniqueCategories() {
-        return productRepository.findDistinctCategories();
+        long start = System.currentTimeMillis();
+        List<String> result = productRepository.findDistinctCategories();
+        long end = System.currentTimeMillis();
+        log.info("[DISTINCT] {}ms, 결과: {}개", (end - start), result.size());
+        return result;
     }
 }

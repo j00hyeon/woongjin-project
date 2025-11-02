@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * [개선안] 커스텀 예외 추가, 예외별 적절한 HTTP 상태 코드 반환, 에러 응답에 메시지 포함
  */
 @Slf4j
-@ControllerAdvice(value = {"com.wjc.codetest.product.controller"})
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)

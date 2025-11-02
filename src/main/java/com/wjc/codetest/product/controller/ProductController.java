@@ -1,7 +1,6 @@
 package com.wjc.codetest.product.controller;
 
 import com.wjc.codetest.product.model.request.CreateProductRequest;
-import com.wjc.codetest.product.model.request.GetProductListRequest;
 import com.wjc.codetest.product.model.domain.Product;
 import com.wjc.codetest.product.model.request.UpdateProductRequest;
 import com.wjc.codetest.product.model.response.ProductListResponse;
@@ -80,18 +79,35 @@ public class ProductController {
 
     /**
      * 카테고리별 상품 목록 조회
+     * [문제]
+     *  - GetMapping에 RequestBody 사용
+     * [개선안]
+     *  - @RequestParam으로 변경
+     *  - 전체 목록 조회 추가
+     *  - Entity에 category 인덱스 추가
+     * [인덱스 전] 조회 시간: 68ms
+     * [인덱스 후] 조회 시간: 57ms
+     * -> H2가 빠르기 때문에 H2 환경에서의 차이는 적지만, 대용량 환경에서는 탐색 효율이 더 커질 것
      */
-    @GetMapping(value = "/list")
-    public ResponseEntity<ProductListResponse> getProductListByCategory(@RequestBody GetProductListRequest dto){
-        Page<Product> productList = productService.getListByCategory(dto);
+    @GetMapping
+    public ResponseEntity<ProductListResponse> getProductListByCategory(@RequestParam(required = false) String category,
+                                                                        @RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size){
+        Page<Product> productList = (category == null || category.isBlank())
+                ? productService.getList(page, size) : productService.getListByCategory(category, page, size);
         return ResponseEntity.ok(new ProductListResponse(productList.getContent(), productList.getTotalPages(), productList.getTotalElements(), productList.getNumber()));
     }
 
     /**
-     * 카테고리 목록 조회
+     * 카테고리 조회
+     * [성능 비교]
+     * 1. [DISTINCT] 47ms, 결과: 10개
+     * 2. [GROUP BY] 45ms, 결과: 10개
+     * 3. [STREAM] 266ms, 결과: 10개
+     * -> DB단에서 DISTINCT/GROUP BY 처리하는 것이 효율적
      */
     @GetMapping(value = "/categories")
-    public ResponseEntity<List<String>> getProductListByCategory(){
+    public ResponseEntity<List<String>> getUniqueCategories(){
         List<String> uniqueCategories = productService.getUniqueCategories();
         return ResponseEntity.ok(uniqueCategories);
     }
